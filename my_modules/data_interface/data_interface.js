@@ -33,12 +33,31 @@ function putData(payload){
 		}
 	);
 }
-
+function getAllData(callback){
+	dataModel.find().lean().exec(
+		{},
+		function(err, data){
+			if (err) {
+				console.log('get_all_data helper retreive complete err = ', err);
+				callback(null);
+			} else {
+				console.log('get_all_data helper retreive complete no error');
+				callback(data);
+			}
+			console.log('exiting data_interface.getAllData');
+		}
+	);
+}
+function deleteAllData(callback){
+	dataModel.find({}).remove(callback);
+}
 
 	
 module.exports = {
 	getAllQuestions : getAllQuestions,
-	putData : putData
+	putData : putData,
+	getAllData : getAllData,
+	deleteAllData : deleteAllData
 };
 
 

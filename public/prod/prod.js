@@ -112,60 +112,85 @@ rc.graph = React.createClass({
 });
 /*! home/home.jsx */
 rc.homePageComponent = React.createClass({
-  displayName: 'homePageComponent',
-  getInitialState: function getInitialState() {
-    return null;
-  },
-  componentDidMount: function componentDidMount() {
-    var self = this;
-    io_lib.getAllQuestions(function (data) {
-      var newState = _.extend(data, { count: 0 });
-      self.setState(newState);
-    });
-    grandCentral.off('answered').on('answered', function () {
-      var newState = _.extend({}, self.state);
-      newState.count++;
-      self.setState(newState);
-    });
-  },
-  render: function render() {
-    console.log(this.constructor.displayName + ' render()');
-    var self = this;
-    var outputArray = [];
-    if (this.state) {
-      outputArray.push(React.createElement(
-        'div',
-        { className: 'button login' },
-        'Login'
-      ));
-      outputArray.push(React.createElement(
-        'div',
-        { className: 'examID' },
-        'Your Exam ID is : ',
-        this.state.examID,
-        React.createElement('br', null),
-        React.createElement(
-          'b',
-          null,
-          React.createElement(
-            'i',
-            null,
-            this.state.count,
-            ' answers in your data store'
-          )
-        ),
-        React.createElement('br', null),
-        'If you wish to save your progress and your data store, then please login'
-      ));
-      outputArray.push(React.createElement(rc.graph, null));
-      outputArray.push(React.createElement(rc.questionWrapper, { data: this.state }));
+    displayName: 'homePageComponent',
+    getInitialState: function getInitialState() {
+        return null;
+    },
+    componentDidMount: function componentDidMount() {
+        var self = this;
+        io_lib.getAllQuestions(function (data) {
+            var newState = _.extend(data, { count: 0 });
+            self.setState(newState);
+        });
+        grandCentral.off('answered').on('answered', function () {
+            var newState = _.extend({}, self.state);
+            newState.count++;
+            self.setState(newState);
+        });
+    },
+    render: function render() {
+        console.log(this.constructor.displayName + ' render()');
+        var self = this;
+        var outputArray = [];
+        if (this.state) {
+            outputArray.push(React.createElement(rc.adminbuttons, null));
+            outputArray.push(React.createElement(
+                'div',
+                { className: 'button login' },
+                'Login'
+            ));
+            outputArray.push(React.createElement(
+                'div',
+                { className: 'examID' },
+                'Your Exam ID is : ',
+                this.state.examID,
+                React.createElement('br', null),
+                React.createElement(
+                    'b',
+                    null,
+                    React.createElement(
+                        'i',
+                        null,
+                        this.state.count,
+                        ' answers in your data store'
+                    )
+                ),
+                React.createElement('br', null),
+                'If you wish to save your progress and your data store, then please login'
+            ));
+            outputArray.push(React.createElement(rc.graph, null));
+            outputArray.push(React.createElement(rc.questionWrapper, { data: this.state }));
+        }
+        return React.createElement(
+            'div',
+            { id: 'homepage' },
+            outputArray
+        );
     }
-    return React.createElement(
-      'div',
-      { id: 'homepage' },
-      outputArray
-    );
-  }
+});
+rc.adminbuttons = React.createClass({
+    displayName: 'adminbuttons',
+    render: function render() {
+        return React.createElement(
+            'div',
+            { className: 'admin' },
+            React.createElement(
+                'span',
+                null,
+                'Admin: '
+            ),
+            React.createElement(
+                'a',
+                { href: '/api/data', target: '_blank' },
+                'Click to view data'
+            ),
+            React.createElement(
+                'a',
+                { href: '/api/data/delete', target: '_blank' },
+                'Click to delete data'
+            )
+        );
+    }
 });
 /*! home/questioncomponent.jsx */
 rc.questionWrapper = React.createClass({

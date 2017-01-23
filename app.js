@@ -24,7 +24,7 @@ module.exports = function(){
     app.use(express.static(__dirname + '/public'));
 
 
-
+    // QUSTIONS endpoints
     app.get('/api/get_all_questions', function(req, res){
         data_interface.getAllQuestions(function(data){
             // at this point we should make a call to get the examID 
@@ -39,13 +39,30 @@ module.exports = function(){
     }); 
 
 
+
+    // DATA endpoints
     app.put('/api/data', function(req, res){
         console.log('attempting to put ' + JSON.stringify(req.body));
         data_interface.putData(req.body);  
         res.json( true );       
     });
+    app.get('/api/data', function(req, res){
+        console.log('attempting to get data');
+        data_interface.getAllData(function(data){
+            console.log('sending response to client');
+            res.json( data );
+        });       
+    });
+    app.get('/api/data/delete', function(req, res){
+        console.log('attempting to delete all data');
+        data_interface.deleteAllData(function( result ){
+            console.log('sending response to client');
+            res.json( result );
+        });       
+    });
+
+
 
 
     return app;
-
 }
