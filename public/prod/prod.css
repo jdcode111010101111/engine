@@ -17,7 +17,7 @@ body, html, A, IMG {
   padding: 0;
   border: 0;
   margin: 0; }
-#appContainer, #pagecontainer {
+#appContainer, #pageContainer {
   position: relative; }
 #appContainer {
   margin: 0 auto;
@@ -29,43 +29,51 @@ body, html, A, IMG {
 #appContainer IMG {
   width: auto;
   max-width: 100%; }
-#pagecontainer {
-  padding: 0 15px; }
-.codestyle {
-  font-family: courier, monospace;
-  color: #555;
-  margin: 0 5px; }
 body {
   font-family: helvetica, arial, sans-serif; }
 /*! structure/_variables.scss */
 /*! mainmodal/ui/edgebuttons.scss */
 @media (max-width: 767px) {
-  #modalcontainer .modalCloseButtonWrapper {
+  #modalContainer .modalCloseButtonWrapper {
     position: relative;
     height: 10px; }
-  #modalcontainer .modalCloseButton {
+  #modalContainer .modalCloseButton {
     position: absolute;
     top: 0;
     right: 0; } }
 @media (min-width: 768px) and (max-width: 991px) {
-  #modalcontainer .modalCloseButtonWrapper {
+  #modalContainer .modalCloseButtonWrapper {
     position: relative;
     height: 0; }
-  #modalcontainer .modalCloseButton {
+  #modalContainer .modalCloseButton {
     position: absolute;
     top: -20px;
     right: -20px; } }
 @media (min-width: 992px) {
-  #modalcontainer .modalCloseButtonWrapper {
+  #modalContainer .modalCloseButtonWrapper {
     position: relative;
     height: 0; }
-  #modalcontainer .modalCloseButton {
+  #modalContainer .modalCloseButton {
     position: absolute;
     top: -20px;
     right: -20px; } }
-#modalcontainer .modalCloseButton img {
+#modalContainer .modalCloseButton img {
   display: block;
   border: 0; }
+/*! mainmodal/templates/loginModal/loginModal.scss */
+#signupModal LABEL {
+  display: block;
+  margin-bottom: 20px; }
+  #signupModal LABEL SPAN {
+    width: 100px;
+    display: inline-block; }
+/*! mainmodal/templates/signupModal/signupModal.scss */
+#signupModal LABEL {
+  display: block;
+  margin-bottom: 20px; }
+  #signupModal LABEL SPAN {
+    width: 100px;
+    display: inline-block; }
 /*! loader/loader.scss */
 #loadercontainer #loader {
   display: none;
@@ -85,69 +93,69 @@ body {
   margin-top: -400px; }
 /*! mainmodal/mainmodal.scss */
 @media (max-width: 767px) {
-  #modalcontainer .modalwrapper {
+  #modalContainer .modalwrapper {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%; }
-  #modalcontainer .modalCloseButtonWrapper {
+  #modalContainer .modalCloseButtonWrapper {
     position: relative;
     height: 10px; }
-  #modalcontainer .modalCloseButton {
+  #modalContainer .modalCloseButton {
     position: absolute;
     top: 0;
     right: 0; } }
 @media (min-width: 768px) and (max-width: 991px) {
-  #modalcontainer .modalwrapper {
+  #modalContainer .modalwrapper {
     position: absolute;
     top: 60px;
     left: 10%;
     width: 80%; }
-  #modalcontainer .modalCloseButtonWrapper {
+  #modalContainer .modalCloseButtonWrapper {
     position: relative;
     height: 0; }
-  #modalcontainer .modalCloseButton {
+  #modalContainer .modalCloseButton {
     position: absolute;
     top: -20px;
     right: -20px; } }
 @media (min-width: 992px) {
-  #modalcontainer .modalwrapper {
+  #modalContainer .modalwrapper {
     position: absolute;
     top: 120px;
     left: 25%;
     width: 50%; }
-  #modalcontainer .modalCloseButtonWrapper {
+  #modalContainer .modalCloseButtonWrapper {
     position: relative;
     height: 0; }
-  #modalcontainer .modalCloseButton {
+  #modalContainer .modalCloseButton {
     position: absolute;
     top: -20px;
     right: -20px; } }
-#modalcontainer .absolutewrapper {
+#modalContainer .absolutewrapper {
   position: absolute;
   top: 0;
   height: 100%;
   width: 100%; }
-#modalcontainer .greybacking {
+#modalContainer .greybacking {
   position: relative;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background: rgba(77, 77, 77, 0.7); }
-#modalcontainer .modalwrapper {
+#modalContainer .modalwrapper {
   background: white;
   border-radius: 13px;
   border: 2px solid #666; }
-#modalcontainer .modalCloseButton img {
+#modalContainer .modalCloseButton img {
   display: block;
   border: 0; }
-#modalcontainer .modalContentsWrapper {
+#modalContainer .modalContentsWrapper {
   padding: 20px; }
 /*! mainmodal/modalcontentswrapper.scss */
-#modalcontainer .modalContentsWrapper {
+#modalContainer .modalContentsWrapper {
   padding: 20px; }
-#modalcontainer .modalContentsWrapper .btn {
+#modalContainer .modalContentsWrapper .btn {
   display: inline-block; }
 /*! home/graphcomponent.scss */
 #graph {
@@ -199,9 +207,14 @@ body {
     background-color: #999; }
   #homepage .item {
     height: 140px; }
-  #homepage .login {
+  #homepage .loginbuttons {
     float: right;
-    margin-top: 0; }
+    width: 100px; }
+    #homepage .loginbuttons > * {
+      float: right;
+      margin: 0 0 10px;
+      padding: 4px 15px 4px;
+      width: 100px; }
 #homepage .admin {
   height: 35px;
   background-color: #bccff2;

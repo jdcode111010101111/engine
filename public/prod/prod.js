@@ -76,7 +76,6 @@ var SiteConfig = {
         })
         .done(function(data){
             grandCentral.trigger('loaderEnd','putData');
-            alert('data sent')
         })
         .fail(function(xhr, strErr){
             grandCentral.trigger('loaderEnd','putData');
@@ -134,11 +133,7 @@ rc.homePageComponent = React.createClass({
         var outputArray = [];
         if (this.state) {
             outputArray.push(React.createElement(rc.adminbuttons, null));
-            outputArray.push(React.createElement(
-                'div',
-                { className: 'button login' },
-                'Login'
-            ));
+            outputArray.push(React.createElement(rc.loginbuttons, null));
             outputArray.push(React.createElement(
                 'div',
                 { className: 'examID' },
@@ -165,6 +160,28 @@ rc.homePageComponent = React.createClass({
             'div',
             { id: 'homepage' },
             outputArray
+        );
+    }
+});
+rc.loginbuttons = React.createClass({
+    displayName: 'loginbuttons',
+    handleClick: function handleClick(str) {
+        grandCentral.trigger('modalShow', str);
+    },
+    render: function render() {
+        return React.createElement(
+            'div',
+            { className: 'loginbuttons' },
+            React.createElement(
+                'div',
+                { onClick: this.handleClick.bind(self, 'loginModal'), className: 'button' },
+                'Login'
+            ),
+            React.createElement(
+                'div',
+                { onClick: this.handleClick.bind(self, 'signupModal'), className: 'button' },
+                'Signup'
+            )
         );
     }
 });
@@ -225,8 +242,19 @@ rc.questionComponent = React.createClass({
 			React.createElement(
 				"div",
 				{ className: "question" },
-				"Question : ",
-				this.props.data.desc
+				React.createElement(
+					"b",
+					null,
+					"Question :"
+				),
+				" ",
+				this.props.data.desc,
+				React.createElement("br", null),
+				React.createElement(
+					"i",
+					null,
+					"Click A-D to answer"
+				)
 			),
 			React.createElement(
 				"div",
@@ -265,6 +293,116 @@ rc.modalCloseButton = React.createClass({
                 "div",
                 { className: "modalCloseButton", onClick: this.handleModalClose },
                 React.createElement("img", { src: SiteConfig.assetsDirectory + 'images/ui/modal-close-btn.png' })
+            )
+        );
+    }
+});
+/*! mainmodal/templates/loginModal/loginModal.jsx */
+rc.loginModal = React.createClass({
+    displayName: "loginModal",
+    render: function render() {
+        console.log(this.constructor.displayName + ' render()');
+        return React.createElement(
+            "div",
+            { className: "modalwrapper" },
+            React.createElement(rc.modalCloseButton, null),
+            React.createElement(
+                "div",
+                { className: "modalContentsWrapper" },
+                React.createElement(
+                    "div",
+                    { id: "signupModal" },
+                    React.createElement(
+                        "h3",
+                        null,
+                        "Login"
+                    ),
+                    React.createElement(
+                        "form",
+                        null,
+                        React.createElement(
+                            "label",
+                            null,
+                            React.createElement(
+                                "span",
+                                null,
+                                "Username:"
+                            ),
+                            React.createElement("input", { type: "text", name: "username" })
+                        ),
+                        React.createElement(
+                            "label",
+                            null,
+                            React.createElement(
+                                "span",
+                                null,
+                                "Password:"
+                            ),
+                            React.createElement("input", { type: "text", name: "password" })
+                        ),
+                        React.createElement("input", { type: "submit", value: "Submit" })
+                    )
+                )
+            )
+        );
+    }
+});
+/*! mainmodal/templates/signupModal/signupModal.jsx */
+rc.signupModal = React.createClass({
+    displayName: "signupModal",
+    render: function render() {
+        console.log(this.constructor.displayName + ' render()');
+        return React.createElement(
+            "div",
+            { className: "modalwrapper" },
+            React.createElement(rc.modalCloseButton, null),
+            React.createElement(
+                "div",
+                { className: "modalContentsWrapper" },
+                React.createElement(
+                    "div",
+                    { id: "signupModal" },
+                    React.createElement(
+                        "h3",
+                        null,
+                        "Sign Up"
+                    ),
+                    React.createElement(
+                        "form",
+                        null,
+                        React.createElement(
+                            "label",
+                            null,
+                            React.createElement(
+                                "span",
+                                null,
+                                "Enter Email:"
+                            ),
+                            React.createElement("input", { type: "text", name: "username" })
+                        ),
+                        React.createElement(
+                            "label",
+                            null,
+                            React.createElement(
+                                "span",
+                                null,
+                                "Enter Password:"
+                            ),
+                            React.createElement("input", { type: "text", name: "password" })
+                        ),
+                        React.createElement(
+                            "label",
+                            null,
+                            React.createElement(
+                                "span",
+                                null,
+                                "Verify Password:"
+                            ),
+                            React.createElement("input", { type: "text", name: "password" })
+                        ),
+                        React.createElement("input", { type: "submit", value: "Submit" })
+                    )
+                )
             )
         );
     }
@@ -327,23 +465,7 @@ rc.mainmodal = React.createClass({
     componentDidMount: function componentDidMount() {
         var self = this;
         grandCentral.off('modalHide').on('modalHide', function () {
-            var modalDeeplink = false;
-            if (app.status.currentFragString) {
-                if (app.status.currentFragString.indexOf('modalShow-') > -1) {
-                    modalDeeplink = true;
-                }
-            }
-            if (!modalDeeplink) {
-                self.setState({ show: false, whichTemplate: '' });
-            } else {
-                var newURL = '#/' + app.status.currentRoute;
-                var stringToRemove = 'modalShow-' + self.state.whichTemplate;
-                console.log('removing ' + stringToRemove + 'from the URL');
-                newURL = newURL.replace('/' + stringToRemove, '');
-                newURL = newURL.replace(stringToRemove + '/', '');
-                newURL = newURL.replace(stringToRemove, '');
-                app.navigate(newURL);
-            }
+            self.setState({ show: false, whichTemplate: '' });
         });
         grandCentral.off('modalShow').on('modalShow', function (payLoad) {
             self.setState({ show: true, whichTemplate: payLoad });
@@ -354,10 +476,10 @@ rc.mainmodal = React.createClass({
         var self = this;
         var outputTemplate = [];
         switch (this.state.whichTemplate) {
-            case 'attackontitanModal':
-                outputTemplate.push(React.createElement(rc.demoModal1, null));break;
-            case 'deathnoteModal':
-                outputTemplate.push(React.createElement(rc.demoModal2, null));break;
+            case 'loginModal':
+                outputTemplate.push(React.createElement(rc.loginModal, null));break;
+            case 'signupModal':
+                outputTemplate.push(React.createElement(rc.signupModal, null));break;
         }
         if (this.state.show) {
             return React.createElement(
@@ -390,5 +512,9 @@ catch (e) {
 }
 ReactDOM.render(
     React.createElement( rc.homePageComponent ),
-    document.getElementById('appContainer')
+    document.getElementById('pageContainer')
 ); 
+ReactDOM.render(
+    React.createElement( rc.mainmodal ),
+    document.getElementById('modalContainer')
+);   
