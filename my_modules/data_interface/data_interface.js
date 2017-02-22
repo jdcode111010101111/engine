@@ -21,17 +21,13 @@ function getAllQuestions(callback){
 	);
 }
 
-function putData(payload){
+function putData(payload, callback){
 	var newItem = new dataModel( payload );
-	newItem.save(
-		function(err){				
-			if (err) {
-				console.log('putData helper save complete err = ', err);
-			} else {
-				console.log('putData helper save complete no error');
-			}
-		}
-	);
+	newItem.save(function(err, data){
+        if (err) { console.log('putData helper save complete err = ', err); }
+        else { console.log('putData helper save complete no error'); }			
+		callback(err, data);
+	});
 }
 function getAllData(callback){
 	dataModel.find().lean().exec(

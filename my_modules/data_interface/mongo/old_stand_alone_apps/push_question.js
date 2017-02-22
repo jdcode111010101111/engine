@@ -22,13 +22,21 @@ var record = [{
 	qid: 4,
 	desc: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
 	ans: 'D'		
+},{
+	qid: 5,
+	desc: 'Boring boring boring boring. Boring. Boring. Boring. Boring boring boring boring. Boring. Boring. Boring.',
+	ans: 'B'		
+},{
+	qid: 6,
+	desc: 'Yawn yawn. Yawn yawn. Yawn yawn. Yawn yawn. Yawn yawn. Yawn yawn. Yawn yawn. Yawn yawn. Yawn yawn.',
+	ans: 'B'		
 }];
 
 var dbconnect = require('../dbconnectmlab'); // mongoose connections to mongolab
 
 var questionsModel = require('../models/questionsModel');
 
-var newItem = new questionsModel( record[0] );
+var newItem = new questionsModel( record[5] );
 newItem.save(
 	function(err){				
 		if (err) {

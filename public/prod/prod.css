@@ -75,7 +75,7 @@ body {
     width: 100px;
     display: inline-block; }
 /*! loader/loader.scss */
-#loadercontainer #loader {
+#loaderContainer #loader {
   display: none;
   position: fixed;
   width: 100%;
@@ -83,12 +83,12 @@ body {
   background: rgba(255, 255, 255, 0.8);
   top: 0;
   left: 0; }
-#loadercontainer #loader.active {
+#loaderContainer #loader.active {
   display: block; }
-#loadercontainer .loadingmessage {
+#loaderContainer .loadingmessage {
   top: 50%;
   position: relative; }
-#loadercontainer .spinner {
+#loaderContainer .spinner {
   width: auto;
   margin-top: -400px; }
 /*! mainmodal/mainmodal.scss */
@@ -159,19 +159,27 @@ body {
   display: inline-block; }
 /*! home/graphcomponent.scss */
 #graph {
-  width: 50%;
+  width: 300px;
   float: right;
-  background-color: #ddd;
-  border: 1px solid #666;
-  height: 300px; }
-  #graph > SPAN {
-    height: 100%;
-    width: 100%;
-    display: table; }
-  #graph > SPAN > SPAN {
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center; }
+  height: 400px;
+  position: relative; }
+  #graph > * {
+    display: block;
+    position: absolute; }
+  #graph IMG {
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #666; }
+  #graph .bullit {
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    display: block;
+    background-color: blue; }
+  #graph .totals {
+    top: 320px;
+    left: 0; }
 /*! home/home.scss */
 #homepage {
   max-width: 1000px;

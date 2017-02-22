@@ -66,7 +66,7 @@ var SiteConfig = {
             alert('crash: '+strErr + ' ' + xhr.status);
         });  
     }
-    function putData(payload){
+    function putData(payload, callback){
         grandCentral.trigger('loaderStart','putData');
         $.ajax({     
             url: '/api/data',   
@@ -76,15 +76,33 @@ var SiteConfig = {
         })
         .done(function(data){
             grandCentral.trigger('loaderEnd','putData');
+            callback(); 
         })
         .fail(function(xhr, strErr){
             grandCentral.trigger('loaderEnd','putData');
             alert('Error : ',strErr + ' ' + xhr.status);
         });        
     }
+    function getGraph(examID, callback){
+        grandCentral.trigger('loaderStart','getGraph');
+        $.ajax({     
+            url: '/api/graph/'+examID,     
+            type: 'GET'            
+        })
+        .done(function(data){
+            grandCentral.trigger('loaderEnd','getGraph');
+            console.log('data loaded')
+            callback(data);
+        })
+        .fail(function(xhr, strErr){
+            grandCentral.trigger('loaderEnd','getGraph');
+            alert('crash: '+strErr + ' ' + xhr.status);
+        });  
+    }
 	return {
         getAllQuestions : getAllQuestions,
-        putData : putData
+        putData : putData,
+        getGraph : getGraph
 	};
 })();
 /*! jsxcompiled.js */
@@ -94,16 +112,52 @@ var rc = {};
 rc.graph = React.createClass({
 	displayName: "graph",
 	render: function render() {
+		console.log('===> ', this.props.data);
+		var graphData = this.props.data.graph;
+		if (!graphData) graphData = {};
+		if (!graphData.A) graphData.A = 0;
+		if (!graphData.B) graphData.B = 0;
+		if (!graphData.C) graphData.C = 0;
+		if (!graphData.D) graphData.D = 0;
+		var xAxis = graphData.B - graphData.D;
+		var yAxis = graphData.A - graphData.C;
+		var modifier = -5; 
+		modifier += 150; 
+		var x = xAxis * 50 + modifier;
+		var y = yAxis * 50 * -1 + modifier;
 		return React.createElement(
 			"div",
 			{ id: "graph" },
+			React.createElement("img", { src: "images/graph.png" }),
+			React.createElement("span", { className: "bullit", style: {
+					left: x + 'px', top: y + 'px'
+				} }),
 			React.createElement(
-				"span",
-				null,
+				"div",
+				{ className: "totals" },
 				React.createElement(
-					"span",
+					"div",
 					null,
-					"Graph (work in progress)"
+					"A total : ",
+					graphData.A
+				),
+				React.createElement(
+					"div",
+					null,
+					"B total : ",
+					graphData.B
+				),
+				React.createElement(
+					"div",
+					null,
+					"C total : ",
+					graphData.C
+				),
+				React.createElement(
+					"div",
+					null,
+					"D total : ",
+					graphData.D
 				)
 			)
 		);
@@ -119,12 +173,21 @@ rc.homePageComponent = React.createClass({
         var self = this;
         io_lib.getAllQuestions(function (data) {
             var newState = _.extend(data, { count: 0 });
+            stores.home = newState;
             self.setState(newState);
         });
         grandCentral.off('answered').on('answered', function () {
-            var newState = _.extend({}, self.state);
-            newState.count++;
-            self.setState(newState);
+            io_lib.getGraph(self.state.examID, function (data) {
+                var count = _.values(data); 
+                count = _.reduce(count, function (memo, num) {
+                    return memo + num;
+                }, 0); 
+                var newState = _.extend({}, self.state);
+                newState.count = count;
+                newState.graph = data;
+                stores.home = newState;
+                self.setState(newState);
+            });
         });
     },
     render: function render() {
@@ -153,7 +216,7 @@ rc.homePageComponent = React.createClass({
                 React.createElement('br', null),
                 'If you wish to save your progress and your data store, then please login'
             ));
-            outputArray.push(React.createElement(rc.graph, null));
+            outputArray.push(React.createElement(rc.graph, { data: this.state }));
             outputArray.push(React.createElement(rc.questionWrapper, { data: this.state }));
         }
         return React.createElement(
@@ -204,77 +267,79 @@ rc.adminbuttons = React.createClass({
             React.createElement(
                 'a',
                 { href: '/api/data/delete', target: '_blank' },
-                'Click to delete data'
-            )
+                'Click to delete data for all Exam ID\'s'
+            ),
+            '(please refresh page after deleting data)'
         );
     }
 });
 /*! home/questioncomponent.jsx */
 rc.questionWrapper = React.createClass({
-	displayName: "questionWrapper",
+	displayName: 'questionWrapper',
 	render: function render() {
 		var self = this;
 		var outputArray = [];
-		_.each(this.props.data.questions, function (e, i) {
-			outputArray.push(React.createElement(rc.questionComponent, { data: e, examID: self.props.data.examID }));
-		});
+		console.log('this.props.data ', this.props.data);
+		var e = this.props.data.questions[(this.props.data.count + 1) % 6];
+		outputArray.push(React.createElement(rc.questionComponent, { data: e, examID: self.props.data.examID }));
 		return React.createElement(
-			"div",
-			{ id: "questionwrapper" },
+			'div',
+			{ id: 'questionwrapper' },
 			outputArray
 		);
 	}
 });
 rc.questionComponent = React.createClass({
-	displayName: "questionComponent",
+	displayName: 'questionComponent',
 	hClick: function hClick(ans) {
 		io_lib.putData({
 			qid: this.props.data.qid,
 			ans: ans,
 			examId: this.props.examID
+		}, function () {
+			grandCentral.trigger('answered');
 		});
-		grandCentral.trigger('answered');
 	},
 	render: function render() {
 		return React.createElement(
-			"div",
-			{ className: "item" },
+			'div',
+			{ className: 'item' },
 			React.createElement(
-				"div",
-				{ className: "question" },
+				'div',
+				{ className: 'question' },
 				React.createElement(
-					"b",
+					'b',
 					null,
-					"Question :"
+					'Question :'
 				),
-				" ",
+				' ',
 				this.props.data.desc,
-				React.createElement("br", null),
+				React.createElement('br', null),
 				React.createElement(
-					"i",
+					'i',
 					null,
-					"Click A-D to answer"
+					'Click A-D to answer'
 				)
 			),
 			React.createElement(
-				"div",
-				{ className: "button", onClick: this.hClick.bind(self, 'A') },
-				"A"
+				'div',
+				{ className: 'button', onClick: this.hClick.bind(self, 'A') },
+				'A'
 			),
 			React.createElement(
-				"div",
-				{ className: "button", onClick: this.hClick.bind(self, 'B') },
-				"B"
+				'div',
+				{ className: 'button', onClick: this.hClick.bind(self, 'B') },
+				'B'
 			),
 			React.createElement(
-				"div",
-				{ className: "button", onClick: this.hClick.bind(self, 'C') },
-				"C"
+				'div',
+				{ className: 'button', onClick: this.hClick.bind(self, 'C') },
+				'C'
 			),
 			React.createElement(
-				"div",
-				{ className: "button", onClick: this.hClick.bind(self, 'D') },
-				"D"
+				'div',
+				{ className: 'button', onClick: this.hClick.bind(self, 'D') },
+				'D'
 			)
 		);
 	}
@@ -510,6 +575,7 @@ catch (e) {
     window.console.warn = function(txt){};
     window.console.error = function(txt){};
 }
+window.stores = {};
 ReactDOM.render(
     React.createElement( rc.homePageComponent ),
     document.getElementById('pageContainer')
@@ -517,4 +583,8 @@ ReactDOM.render(
 ReactDOM.render(
     React.createElement( rc.mainmodal ),
     document.getElementById('modalContainer')
+);   
+ReactDOM.render(
+    React.createElement( rc.loader ),
+    document.getElementById('loaderContainer')
 );   

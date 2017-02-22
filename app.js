@@ -1,5 +1,6 @@
 
 var data_interface = require('./my_modules/data_interface/data_interface.js');
+var _ = require('underscore');
 
 function getRandom(min, max){
     min = Math.floor(min);
@@ -43,9 +44,10 @@ module.exports = function(){
     // DATA endpoints
     app.put('/api/data', function(req, res){
         console.log('attempting to put ' + JSON.stringify(req.body));
-        data_interface.putData(req.body);  
-        res.json( true );       
-    });
+        data_interface.putData(req.body, function(err, data){
+            res.json( err ? err : true );
+        });  
+    }); 
     app.get('/api/data', function(req, res){
         console.log('attempting to get data');
         data_interface.getAllData(function(data){
@@ -60,8 +62,20 @@ module.exports = function(){
             res.json( result );
         });       
     });
-
-
+    // GRAPH enpoints
+    app.get('/api/graph/:examID', function(req, res){
+        console.log('attempting to get graph data');
+         // note the capitals "ID"  yeh this is a fuck up as in client code it is sometimes "ID"
+        var examId = parseInt(req.params.examID); 
+        data_interface.getAllData(function(data){
+            data = _.where(data, {examId: examId});  // reduce to just this examId
+            data = _.pluck(data, 'ans');
+            data = _.countBy(data);
+            setTimeout(function(){ 
+                res.json( data );
+            }, 750); 
+        });  
+    });   
 
 
     return app;
